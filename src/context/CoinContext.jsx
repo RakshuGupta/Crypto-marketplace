@@ -18,10 +18,23 @@ const CoinContextProvider = (props) => {
       }
     };
 
-    fetch(`/api/v3/coins/markets?vs_currency=${currency.name}`, options)
-      .then(res => res.json())
-      .then(res => setAllCoin(res))
-      .catch(err => console.error("Failed to fetch coin data:", err));
+    try {
+      const res = await fetch(
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency.name}`,
+        options
+      );
+      const data = await res.json();
+
+      if (Array.isArray(data)) {
+        setAllCoin(data);
+      } else {
+        console.error("Unexpected response from API:", data);
+        setAllCoin([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch coin data:", err);
+      setAllCoin([]);
+    }
   };
 
   useEffect(() => {
