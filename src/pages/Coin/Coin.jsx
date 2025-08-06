@@ -11,21 +11,36 @@ const Coin = () => {
   const { currency } = useContext(CoinContext);
 
   const fetchCoinData = async () => {
-    const options = { method: 'GET', headers: { accept: 'application/json' } };
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        'x-cg-demo-api-key': 'CG-PNzL8pntm9t5JE8uWrDX3mUU'
+      }
+    };
 
-    fetch(`/api/v3/coins/${coinId}`, options)
+    fetch(`https://api.coingecko.com/api/v3/coins/${coinId}`, options)
       .then((res) => res.json())
       .then((res) => setCoinData(res))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Coin data fetch error:", err));
   };
 
   const fetchHistoricalData = async () => {
-    const options = { method: 'GET', headers: { accept: 'application/json' } };
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        'x-cg-demo-api-key': 'CG-PNzL8pntm9t5JE8uWrDX3mUU'
+      }
+    };
 
-    fetch(`/api/v3/coins/${coinId}/market_chart?vs_currency=${currency.name}&days=10&interval=daily`, options)
+    fetch(
+      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${currency.name}&days=10&interval=daily`,
+      options
+    )
       .then((res) => res.json())
       .then((res) => setHistoricalData(res))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error("Historical data fetch error:", err));
   };
 
   useEffect(() => {
@@ -69,20 +84,19 @@ const Coin = () => {
             </li>
           </ul>
           <ul>
-            <li>24 Hour high</li>
+            <li>24 Hour High</li>
             <li>
               {currency.symbol}
               {coinData.market_data.high_24h[currency.name].toLocaleString()}
             </li>
           </ul>
           <ul>
-            <li>24 Hour low</li>
+            <li>24 Hour Low</li>
             <li>
               {currency.symbol}
               {coinData.market_data.low_24h[currency.name].toLocaleString()}
             </li>
           </ul>
-          
         </div>
       </div>
     );
