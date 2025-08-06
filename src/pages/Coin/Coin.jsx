@@ -15,14 +15,18 @@ const Coin = () => {
       method: 'GET',
       headers: {
         accept: 'application/json',
-        'x-cg-demo-api-key': 'CG-PNzL8pntm9t5JE8uWrDX3mUU'
+        // You can re-enable this key if needed
+        // 'x-cg-demo-api-key': 'CG-PNzL8pntm9t5JE8uWrDX3mUU'
       }
     };
 
-    fetch(`https://api.coingecko.com/api/v3/coins/${coinId}`, options)
-      .then((res) => res.json())
-      .then((res) => setCoinData(res))
-      .catch((err) => console.error("Coin data fetch error:", err));
+    try {
+      const res = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}`, options);
+      const data = await res.json();
+      setCoinData(data);
+    } catch (err) {
+      console.error("Coin data fetch error:", err);
+    }
   };
 
   const fetchHistoricalData = async () => {
@@ -30,20 +34,24 @@ const Coin = () => {
       method: 'GET',
       headers: {
         accept: 'application/json',
-        'x-cg-demo-api-key': 'CG-PNzL8pntm9t5JE8uWrDX3mUU'
+        // 'x-cg-demo-api-key': 'CG-PNzL8pntm9t5JE8uWrDX3mUU'
       }
     };
 
-    fetch(
-      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${currency.name}&days=10&interval=daily`,
-      options
-    )
-      .then((res) => res.json())
-      .then((res) => setHistoricalData(res))
-      .catch((err) => console.error("Historical data fetch error:", err));
+    try {
+      const url = `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${currency.name.toLowerCase()}&days=10&interval=daily`;
+      const res = await fetch(url, options);
+      if (!res.ok) throw new Error("Failed to fetch historical data");
+      const data = await res.json();
+      setHistoricalData(data);
+    } catch (err) {
+      console.error("Historical data fetch error:", err);
+    }
   };
 
   useEffect(() => {
+    console.log("coinId:", coinId);
+    console.log("currency:", currency);
     fetchCoinData();
     fetchHistoricalData();
   }, [currency]);
@@ -73,28 +81,28 @@ const Coin = () => {
             <li>Current Price</li>
             <li>
               {currency.symbol}
-              {coinData.market_data.current_price[currency.name].toLocaleString()}
+              {coinData.market_data.current_price[currency.name.toLowerCase()].toLocaleString()}
             </li>
           </ul>
           <ul>
             <li>Market Cap</li>
             <li>
               {currency.symbol}
-              {coinData.market_data.market_cap[currency.name].toLocaleString()}
+              {coinData.market_data.market_cap[currency.name.toLowerCase()].toLocaleString()}
             </li>
           </ul>
           <ul>
             <li>24 Hour High</li>
             <li>
               {currency.symbol}
-              {coinData.market_data.high_24h[currency.name].toLocaleString()}
+              {coinData.market_data.high_24h[currency.name.toLowerCase()].toLocaleString()}
             </li>
           </ul>
           <ul>
             <li>24 Hour Low</li>
             <li>
               {currency.symbol}
-              {coinData.market_data.low_24h[currency.name].toLocaleString()}
+              {coinData.market_data.low_24h[currency.name.toLowerCase()].toLocaleString()}
             </li>
           </ul>
         </div>
